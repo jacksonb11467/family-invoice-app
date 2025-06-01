@@ -241,40 +241,10 @@
             color: var(--info-color);
         }
         
-        .camera-container {
-            display: none;
-            margin-top: 20px;
-        }
-        
-        #camera-feed {
-            width: 100%;
-            max-height: 300px;
-            border-radius: 5px;
-            background-color: #f0f0f0;
-        }
-        
         .camera-controls {
             display: flex;
             justify-content: center;
             margin-top: 10px;
-        }
-        
-        .capture-btn {
-            background-color: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-            font-size: 20px;
-            transition: all 0.3s;
-        }
-        
-        .capture-btn:hover {
-            background-color: #c62828;
-            transform: scale(1.05);
         }
         
         .invoice-summary {
@@ -346,25 +316,13 @@
                     <div class="upload-icon">
                         <i class="fas fa-file-invoice"></i>
                     </div>
-                    <p>Upload an invoice image or take a photo</p>
+                    <p>Upload an invoice image</p>
                     <div>
-                        <button type="button" class="camera-btn" id="camera-btn">
-                            <i class="fas fa-camera"></i> Take Photo
-                        </button>
                         <button type="button" class="file-btn" id="file-btn">
                             <i class="fas fa-file-upload"></i> Upload File
                         </button>
                     </div>
                     <input type="file" id="file-input" class="file-input" accept="image/*" hidden>
-                </div>
-                
-                <div class="camera-container" id="camera-container">
-                    <video id="camera-feed" autoplay></video>
-                    <div class="camera-controls">
-                        <button type="button" class="capture-btn" id="capture-btn">
-                            <i class="fas fa-camera"></i>
-                        </button>
-                    </div>
                 </div>
                 
                 <div class="preview-container" id="preview-container">
@@ -421,10 +379,6 @@
         const customEmailInput = document.getElementById('custom-email');
         const fileInput = document.getElementById('file-input');
         const fileBtn = document.getElementById('file-btn');
-        const cameraBtn = document.getElementById('camera-btn');
-        const cameraContainer = document.getElementById('camera-container');
-        const cameraFeed = document.getElementById('camera-feed');
-        const captureBtn = document.getElementById('capture-btn');
         const previewContainer = document.getElementById('preview-container');
         const previewImage = document.getElementById('preview-image');
         const submitBtn = document.getElementById('submit-btn');
@@ -447,30 +401,6 @@
                 handleFileSelect(e.target.files[0]);
             }
         });
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = 'var(--primary-color)';
-            uploadArea.style.backgroundColor = '#f0f7ff';
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.borderColor = '#ddd';
-            uploadArea.style.backgroundColor = '#f9f9f9';
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#ddd';
-            uploadArea.style.backgroundColor = '#f9f9f9';
-            
-            if (e.dataTransfer.files.length > 0) {
-                handleFileSelect(e.dataTransfer.files[0]);
-            }
-        });
-        
-        cameraBtn.addEventListener('click', startCamera);
-        captureBtn.addEventListener('click', capturePhoto);
         
         emailSelect.addEventListener('change', () => {
             if (emailSelect.value === 'custom') {
@@ -524,55 +454,9 @@
                 previewImage.src = e.target.result;
                 previewContainer.style.display = 'block';
                 submitBtn.disabled = false;
-                
-                // Hide camera if it was open
-                cameraContainer.style.display = 'none';
-                stopCamera();
             };
             
             reader.readAsDataURL(file);
-        }
-        
-        async function startCamera() {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } 
-                });
-                
-                cameraFeed.srcObject = stream;
-                cameraContainer.style.display = 'block';
-                uploadArea.style.display = 'none';
-                previewContainer.style.display = 'none';
-                
-            } catch (error) {
-                showStatus('Unable to access camera. Please check permissions.', 'error');
-                console.error('Camera error:', error);
-            }
-        }
-        
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-        }
-        
-        function capturePhoto() {
-            const canvas = document.createElement('canvas');
-            canvas.width = cameraFeed.videoWidth;
-            canvas.height = cameraFeed.videoHeight;
-            canvas.getContext('2d').drawImage(cameraFeed, 0, 0);
-            
-            // Convert to file
-            canvas.toBlob((blob) => {
-                imageFile = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
-                previewImage.src = canvas.toDataURL('image/jpeg');
-                previewContainer.style.display = 'block';
-                cameraContainer.style.display = 'none';
-                uploadArea.style.display = 'block';
-                submitBtn.disabled = false;
-                stopCamera();
-            }, 'image/jpeg', 0.9);
         }
         
         function validateForm() {
