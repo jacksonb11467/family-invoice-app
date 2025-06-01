@@ -1,0 +1,9 @@
+{
+  "name": "family-invoice-app",
+  "version": "1.0.0",
+  "description": "Family Invoice Sharing App",
+  "main": "index.html",
+  "dependencies": {
+    "node-fetch": "^3.3.1"
+  }
+}
