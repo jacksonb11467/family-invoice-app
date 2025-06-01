@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watford St. Invoice Sharing</title>
+    <title>Family Invoice Sharing</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -292,7 +292,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Watford St. Invoice Sharing</h1>
+        <h1>Family Invoice Sharing</h1>
         
         <form id="invoice-form">
             <div class="form-group">
@@ -536,7 +536,6 @@
                 const endpoint = 'https://api.openai.com/v1/chat/completions';
                 
                 // API key - REPLACE WITH YOUR ACTUAL API KEY
-                // For security, in production this should be stored on the server side
                 const apiKey = 'YOUR_OPENAI_API_KEY'; 
                 
                 // Prepare the request payload
@@ -607,45 +606,33 @@
         }
         
         async function sendInvoiceEmail(email, property, invoiceData, imageFile) {
-            // In a production environment, this would call your backend service
-            // Here we'll use EmailJS as a simple solution for demo purposes
-            
             try {
-                // For demonstration purposes, we'll log what would be sent
-                console.log('Sending email to:', email);
-                console.log('Property:', property);
-                console.log('Service Description:', invoiceData.serviceDescription);
-                console.log('Invoice data:', invoiceData);
+                // Convert image to base64 for email attachment
+                const base64Image = await fileToBase64(imageFile);
                 
-                // For testing purposes, we'll simulate a successful email send
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                return {
-                    success: true
-                };
-                
-                /* 
-                // Example implementation with EmailJS (would require their library)
+                // Prepare email parameters
                 const templateParams = {
                     to_email: email,
                     property: property,
                     service_description: invoiceData.serviceDescription,
-                    invoice_number: invoiceData.invoiceNumber,
-                    invoice_date: invoiceData.date,
-                    invoice_amount: invoiceData.amount,
-                    vendor: invoiceData.vendor,
-                    description: invoiceData.description
+                    invoice_number: invoiceData.invoiceNumber || 'N/A',
+                    invoice_date: invoiceData.date || 'N/A',
+                    due_date: invoiceData.dueDate || 'N/A',
+                    amount: invoiceData.totalAmount || 'N/A',
+                    vendor: invoiceData.vendor || 'N/A',
+                    description: invoiceData.description || 'N/A',
+                    image: base64Image
                 };
                 
+                // Send email using EmailJS
                 const result = await emailjs.send(
-                    'YOUR_SERVICE_ID',
-                    'YOUR_TEMPLATE_ID',
-                    templateParams,
-                    'YOUR_USER_ID'
+                    'service_xr3epcc', // Your EmailJS Service ID
+                    'template_vbi84ik', // Your EmailJS Template ID
+                    templateParams
                 );
                 
+                console.log('Email sent successfully:', result.text);
                 return { success: true };
-                */
             } catch (error) {
                 console.error('Email sending error:', error);
                 return {
@@ -731,6 +718,13 @@
             customEmailGroup.style.display = 'none';
             submitBtn.disabled = true;
         }
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // Initialize with your EmailJS Public Key
+            emailjs.init("HN65SDSs7oC9UNIpI"); // Replace with your actual EmailJS Public Key
+        })();
     </script>
 </body>
 </html>
